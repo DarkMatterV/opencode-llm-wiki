@@ -10,7 +10,7 @@ use crate::services::chunking::ChunkingConfig;
 use crate::services::query::QueryConfig;
 use crate::services::llm_client::LlmClient;
 
-pub async fn start_api_server(port: u16) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn start_api_server(host: &str, port: u16) -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
@@ -131,7 +131,8 @@ pub async fn start_api_server(port: u16) -> Result<(), Box<dyn std::error::Error
 
     let app = create_router(state).layer(cors);
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], port));
+    let addr: SocketAddr = format!("{}:{}", host, port).parse()
+        .map_err(|e| format!("Invalid host address '{}': {}", host, e))?;
     info!("API server listening on {}", addr);
 
     let listener = tokio::net::TcpListener::bind(addr).await?;

@@ -15,7 +15,7 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     Serve {
-        #[arg(short, long, default_value = "127.0.0.1")]
+        #[arg(short = 'H', long, default_value = "127.0.0.1")]
         host: String,
         
         #[arg(short, long, default_value = "19828")]
@@ -105,7 +105,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     match cli.command {
         Commands::Serve { host, port } => {
             println!("🚀 Starting LLM Wiki Server on {}:{}", host, port);
-            llm_wiki_server::api::server::start_api_server(port).await?;
+            llm_wiki_server::api::server::start_api_server(&host, port).await?;
         }
         Commands::Init { path, template } => {
             println!("📁 Initializing wiki at: {}", path);

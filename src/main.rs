@@ -25,7 +25,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("   Port: {}", args.port);
     println!();
     
-    start_api_server(args.port).await?;
+    start_api_server(&args.host, args.port).await?;
     
     Ok(())
 }
