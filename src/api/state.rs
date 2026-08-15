@@ -40,7 +40,7 @@ impl AppState {
     ) -> Result<Self> {
         #[cfg(feature = "ruvector")]
         let storage: Arc<dyn VectorStorage> = Arc::new(
-            RuVectorStorage::new(project_path.to_string(), 2048).await?
+            RuVectorStorage::new(project_path.to_string(), embedding_config.dimension).await?
         );
 
         #[cfg(all(feature = "lancedb-backend", not(feature = "ruvector")))]
@@ -50,7 +50,7 @@ impl AppState {
 
         #[cfg(not(any(feature = "ruvector", feature = "lancedb-backend")))]
         compile_error!("Either 'ruvector' or 'lancedb-backend' feature must be enabled");
-        
+
         let embedding_service = EmbeddingService::new(embedding_config.clone())?;
         
         // Use project_path as project_id for now (can be improved later)
