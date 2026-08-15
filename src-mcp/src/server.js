@@ -90,6 +90,19 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         },
       },
       {
+        name: 'wiki_semantic_search',
+        description: 'Semantic (vector) search across wiki chunks using embeddings. Returns chunks ranked by semantic similarity.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            query: { type: 'string', description: 'Search query' },
+            top_k: { type: 'number', description: 'Maximum number of results (default: 10)' },
+            min_score: { type: 'number', description: 'Minimum similarity score 0.0-1.0 to keep (default: 0)' },
+          },
+          required: ['query'],
+        },
+      },
+      {
         name: 'wiki_query_with_context',
         description: 'Query wiki with intelligent context injection (keyword + optional vector search)',
         inputSchema: {
@@ -226,6 +239,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case 'wiki_search': {
         const result = await client.keywordSearch(args.query);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result) }],
+        };
+      }
+
+      case 'wiki_semantic_search': {
+        const topK = args.top_k !== undefined ? args.top_k : 10;
+        const minScore = args.min_score !== undefined ? args.min_score : 0;
+        const result = await client.semanticSearch(args.query, topK, minScore);
         return {
           content: [{ type: 'text', text: JSON.stringify(result) }],
         };

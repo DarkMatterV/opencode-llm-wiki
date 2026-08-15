@@ -132,11 +132,13 @@ export class CoreApiClient {
     return response.json();
   }
 
-  async semanticSearch(query, limit = 10) {
+  async semanticSearch(query, topK = 10, minScore = 0) {
+    const payload = { query, top_k: topK, min_score: minScore };
+
     const response = await fetch(`${this.baseUrl}/api/search/semantic`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query, limit }),
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {

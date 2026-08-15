@@ -288,7 +288,10 @@ impl VectorStorage for RuVectorStorage {
                         chunk_index: metadata.chunk_index,
                         chunk_text: metadata.chunk_text,
                         heading_path: metadata.heading_path,
-                        score: result.score,
+                        // RuVector returns cosine distance (0 = identical, lower = more similar).
+                        // Convert to similarity (1 - distance) so score is "higher = more similar",
+                        // consistent with the LanceDB backend and the min_score filter semantics.
+                        score: 1.0 - result.score,
                         token_ids: metadata.token_ids,
                         token_count: metadata.token_count,
                     });
